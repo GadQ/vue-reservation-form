@@ -15,7 +15,7 @@
             price: 300,
             currency: 'zł',
             rating: {
-                rate: 4.65,
+                rate: 4.5,
                 count: 123
             }
         }),
