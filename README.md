@@ -1,4 +1,4 @@
-# vue-order-form
+# vue-reservation-form
 
 ## Project setup
 ```
