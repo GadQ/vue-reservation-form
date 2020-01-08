@@ -21,12 +21,14 @@
                     Check Out
                 </button>
             </div>
+            <DatePicker/>
         </fieldset>
     </form>
 </template>
 
 <script>
     import Rating from "./Rating";
+    import DatePicker from "./DatePicker";
 
     export default {
         name: 'FormReservation',
@@ -42,7 +44,8 @@
             dateCheckOut: String
         },
         components: {
-            Rating
+            Rating,
+            DatePicker
         },
         watch: {
             dateCheckIn: {
