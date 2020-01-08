@@ -4,7 +4,9 @@
             <span class="sr-only">Price:</span>{{ price }} {{ currency }}
         </div>
 
-        <div class="reservation__rating"></div>
+        <div class="reservation__rating">
+            <Rating :rating="rating"/>
+        </div>
 
         <fieldset class="reservation__dates">
             <legend class="reservation__dates-legend">Dates</legend>
@@ -24,6 +26,8 @@
 </template>
 
 <script>
+    import Rating from "./Rating";
+
     export default {
         name: 'FormReservation',
         data: () => ({
@@ -38,6 +42,7 @@
             dateCheckOut: String
         },
         components: {
+            Rating
         },
         watch: {
             dateCheckIn: {
