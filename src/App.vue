@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <div class="reservation-form">
-            <FormReservation :price="price" :currency="currency" :rating="rating" date-check-in="01.02.2020" date-check-out="01.03.2020" />
+            <FormReservation :price="price" :currency="currency" :rating="rating" :dates="dates" />
         </div>
     </div>
 </template>
@@ -17,6 +17,22 @@
             rating: {
                 rate: 4.5,
                 count: 123
+            },
+            dates: {
+                checkIn: new Date('2020.01.14'),
+                checkOut: new Date('2020.01.21'),
+                availableFrom: new Date('2020.01.12'),
+                availableTo: null,
+                unavailableDates: [
+                    {
+                        from: new Date('2020.01.30'),
+                        to: new Date('2020.01.30'),
+                    },
+                    {
+                        from: new Date('2020.02.03'),
+                        to: new Date('2020.02.06'),
+                    }
+                ]
             }
         }),
         components: {
