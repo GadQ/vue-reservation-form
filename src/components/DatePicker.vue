@@ -43,8 +43,9 @@
             daysOfMonth() {
                 const date = new Date(this.dateShow.getTime());
                 date.setDate(1);
-                let weeks = this.calculateWeeks(date);
-                date.setDate(-1 * date.getDay());
+                const weeks = this.calculateWeeks(date);
+                const daysFromSunday = date.getDay();
+                date.setDate(-1 * daysFromSunday);
 
                 const days = [];
                 for (let i = 0; i < weeks * 7; i++) {
