@@ -47,6 +47,8 @@
 
     .rating {
         display: flex;
+        align-items: flex-start;
+        line-height: 1;
 
         &__stars {
             display: flex;
@@ -66,6 +68,12 @@
                     fill: $color-full;
                 }
             }
+        }
+
+        &__votes-count {
+            margin-left: 5px;
+            font-weight: 600;
+            font-size: 13px;
         }
     }
 
