@@ -1,11 +1,13 @@
 <template>
     <form action="#" class="reservation">
-        <div class="reservation__price">
-            <span class="sr-only">Price:</span>{{ price }} {{ currency }}
-        </div>
+        <div class="reservation__header">
+            <div class="reservation__price">
+                <span class="sr-only">Price:</span>{{ price }} {{ currency }}
+            </div>
 
-        <div class="reservation__rating">
-            <Rating :rating="rating"/>
+            <div class="reservation__rating">
+                <Rating :rating="rating"/>
+            </div>
         </div>
 
         <fieldset class="reservation__dates">
@@ -21,8 +23,8 @@
                     Check Out
                 </button>
             </div>
-            <DatePicker/>
         </fieldset>
+        <DatePicker/>
     </form>
 </template>
 
@@ -71,10 +73,22 @@
         border: 2px solid $color-gray;
         padding: 20px 25px 25px 25px;
 
+        &__header {
+            border-bottom: 2px solid $color-gray;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+        }
+
+        &__price {
+            font-size: 23px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
         &__dates {
             position: relative;
             border: 1px solid $color-gray;
-            margin: 20px 0 0 0;
+            margin: 45px 0 20px 0;
             padding: 8px;
             display: flex;
         }
@@ -82,7 +96,9 @@
         &__dates-legend {
             position: absolute;
             left: 0;
-            bottom: 100%;
+            bottom: calc( 100% + 5px);
+            font-weight: 600;
+            font-size: 13px;
         }
 
         &__dates-buttons {
@@ -90,12 +106,14 @@
         }
 
         &__dates-button {
-            flex-grow: 1;
+            flex-basis: 100%;
             text-align: left;
             border: none;
             background: none;
             cursor: pointer;
             padding: 5px 8px;
+            letter-spacing: -0.7px;
+            font-size: 19px;
         }
 
         &__dates-separator {
