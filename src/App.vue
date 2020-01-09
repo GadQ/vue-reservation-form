@@ -35,9 +35,33 @@
         }
     }
 
+    @mixin fontface($font-name, $font-file, $font-weight: 400, $font-style: normal) {
+        $font-base-dir: 'assets/fonts/' !default;
+
+        @font-face {
+            font-family: $font-name;
+            src: url('#{$font-base-dir}#{$font-file}.woff2') format('woff2'),
+            url('#{$font-base-dir}#{$font-file}.woff') format('woff');
+            font-weight: $font-weight;
+            font-style: $font-style;
+        }
+    }
+
+    @include fontface('Montserrat', 'montserrat-regular');
+    @include fontface('Montserrat', 'montserrat-medium', 500);
+    @include fontface('Montserrat', 'montserrat-semibold', 600);
+    @include fontface('Montserrat', 'montserrat-bold', 700);
+
     body,
     html {
         background: #ececec;
+    }
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.45;
     }
 
     svg {
