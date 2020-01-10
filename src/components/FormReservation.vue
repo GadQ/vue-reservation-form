@@ -24,7 +24,7 @@
                 </button>
             </div>
         </fieldset>
-        <DatePicker/>
+        <DatePicker :date-start="checkIn" :date-end="checkOut" :available-from="dates.availableFrom" :available-to="dates.availableTo" :unavailableDates="dates.unavailableDates" />
     </form>
 </template>
 
@@ -36,29 +36,23 @@
         name: 'FormReservation',
         data: () => ({
             checkIn: null,
-            checkOut: null
+            checkOut: null,
         }),
         props: {
             price: Number,
             currency: String,
             rating: Object,
-            dateCheckIn: String,
-            dateCheckOut: String
+            dates: Object
         },
         components: {
             Rating,
             DatePicker
         },
         watch: {
-            dateCheckIn: {
-                handler: function (date) {
-                    this.checkIn = date;
-                },
-                immediate: true
-            },
-            dateCheckOut: {
-                handler: function (date) {
-                    this.checkOut = date;
+            dates: {
+                handler: function (dates) {
+                    this.checkOut = dates.checkOut;
+                    this.checkIn = dates.checkIn;
                 },
                 immediate: true
             },
