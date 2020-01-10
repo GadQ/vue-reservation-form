@@ -8,7 +8,7 @@
                         d="M6.7 17.5L19.75 3.89a.89.89 0 00-.02-1.24L17.41.26a.85.85 0 00-1.22-.01L.24 16.87a.82.82 0 00-.24.63c0 .24.07.47.24.64l15.95 16.61c.33.34.88.33 1.22-.01l2.33-2.4c.34-.34.35-.9.02-1.23L6.69 17.5z"/>
                 </svg>
             </button>
-            <div class="datepicker__month-viewed">{{ currentMonth }}</div>
+            <div class="datepicker__month-viewed">{{ currentMonthText }}</div>
             <button type="button" class="datepicker__month-button" @click="nextMonth">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 35" width="20"
                      class="datepicker__month-button-icon">
@@ -77,12 +77,11 @@
 
                 return days;
             },
-            currentMonth() {
-                const formatter = new Intl.DateTimeFormat('en', {
+            currentMonthText() {
+                return this.dateShow.toLocaleString('en-GB', {
                     month: 'long',
                     year: 'numeric'
                 });
-                return formatter.format(this.dateShow);
             },
             availableToDate() {
                 if( this.dateFrom === null || this.dateTo !== null ) {
@@ -191,6 +190,10 @@
             isInRange(date, dateFrom, dateTo) {
                 const dateTime = date.getTime();
 
+                if( dateFrom === null && dateTime === null ) {
+                    return false;
+                }
+
                 if (dateFrom !== null && dateTime < dateFrom.getTime()) {
                     return false
                 }
@@ -242,7 +245,7 @@
             this.dateFrom = this.dateStart || null;
             this.dateTo = this.dateEnd || null;
 
-            if( this.dateFrom === null ) {
+            if( this.dateFrom === null && this.dateTo !== null ) {
                 this.dateFrom = new Date(this.dateTo);
                 this.dateTo = null;
             }
@@ -254,11 +257,19 @@
                 }
             }
 
-            if (this.dateStart !== null) {
-                this.dateShow = this.dateStart.getTime() > this.availableFrom.getTime() ? this.dateStart : this.availableFrom;
+            if (this.dateFrom !== null) {
+                this.dateShow = this.dateFrom.getTime() > this.availableFrom.getTime() ? this.dateFrom : this.availableFrom;
             } else {
                 const today = this.getToday();
                 this.dateShow = today.getTime() > this.availableFrom.getTime() ? today : this.availableFrom;
+            }
+        },
+        watch: {
+            dateFrom(date){
+                this.$emit('dateFromChanged', date);
+            },
+            dateTo(date){
+                this.$emit('dateToChanged', date);
             }
         }
     }
@@ -314,6 +325,8 @@
             background: #fff;
             padding: 20px;
             font-size: 13px;
+            border: 1px solid #ddd;
+            border-top: none;
         }
 
         &__weekdays {
