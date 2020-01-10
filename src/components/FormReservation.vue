@@ -14,17 +14,27 @@
             <legend class="reservation__dates-legend">Dates</legend>
             <div class="reservation__dates-buttons">
                 <button class="reservation__dates-button" type="button">
-                    Check In
+                    {{ checkInLabel }}
                 </button>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 22" width="28" class="reservation__dates-separator">
-                    <path d="M32 11c0-.27-.11-.52-.3-.71l-9.9-10a1 1 0 00-1.4 0c-.4.4-.4 1.04 0 1.43L28.58 10H1A1 1 0 000 11a1 1 0 001 1h27.59l-8.2 8.28c-.39.4-.39 1.03 0 1.42a1 1 0 001.42 0l9.9-9.99c.18-.19.29-.45.29-.71z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 22" width="28"
+                     class="reservation__dates-separator">
+                    <path
+                        d="M32 11c0-.27-.11-.52-.3-.71l-9.9-10a1 1 0 00-1.4 0c-.4.4-.4 1.04 0 1.43L28.58 10H1A1 1 0 000 11a1 1 0 001 1h27.59l-8.2 8.28c-.39.4-.39 1.03 0 1.42a1 1 0 001.42 0l9.9-9.99c.18-.19.29-.45.29-.71z"/>
                 </svg>
                 <button class="reservation__dates-button" type="button">
-                    Check Out
+                    {{ checkOutLabel }}
                 </button>
             </div>
         </fieldset>
-        <DatePicker :date-start="checkIn" :date-end="checkOut" :available-from="dates.availableFrom" :available-to="dates.availableTo" :unavailableDates="dates.unavailableDates" />
+        <DatePicker
+            :date-start="checkIn"
+            :date-end="checkOut"
+            :available-from="dates.availableFrom"
+            :available-to="dates.availableTo"
+            :unavailableDates="dates.unavailableDates"
+            @dateFromChanged="checkInChanged"
+            @dateToChanged="checkOutChanged"
+        />
     </form>
 </template>
 
@@ -47,6 +57,38 @@
         components: {
             Rating,
             DatePicker
+        },
+        computed: {
+            checkInLabel() {
+                if (!this.checkIn) {
+                    return 'CheckIn';
+                }
+
+                return this.checkIn.toLocaleString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            },
+            checkOutLabel() {
+                if (!this.checkOut) {
+                    return 'Check Out';
+                }
+
+                return this.checkOut.toLocaleString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
+        },
+        methods:  {
+            checkInChanged(date) {
+                this.checkIn = date;
+            },
+            checkOutChanged(date) {
+                this.checkOut = date;
+            }
         },
         watch: {
             dates: {
@@ -90,7 +132,7 @@
         &__dates-legend {
             position: absolute;
             left: 0;
-            bottom: calc( 100% + 5px);
+            bottom: calc(100% + 5px);
             font-weight: 600;
             font-size: 13px;
         }
