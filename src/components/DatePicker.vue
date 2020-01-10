@@ -190,7 +190,7 @@
             isInRange(date, dateFrom, dateTo) {
                 const dateTime = date.getTime();
 
-                if( dateFrom === null && dateTime === null ) {
+                if( dateFrom === null && dateTo === null ) {
                     return false;
                 }
 
