@@ -13,7 +13,7 @@
         <fieldset class="reservation__dates">
             <legend class="reservation__dates-legend">Dates</legend>
             <div class="reservation__dates-buttons">
-                <button class="reservation__dates-button" type="button">
+                <button class="reservation__dates-button" :class="{ 'is-active': isCheckInActive}" type="button" @click.stop="toggleDatepicker">
                     {{ checkInLabel }}
                 </button>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 22" width="28"
@@ -21,20 +21,25 @@
                     <path
                         d="M32 11c0-.27-.11-.52-.3-.71l-9.9-10a1 1 0 00-1.4 0c-.4.4-.4 1.04 0 1.43L28.58 10H1A1 1 0 000 11a1 1 0 001 1h27.59l-8.2 8.28c-.39.4-.39 1.03 0 1.42a1 1 0 001.42 0l9.9-9.99c.18-.19.29-.45.29-.71z"/>
                 </svg>
-                <button class="reservation__dates-button" type="button">
+                <button class="reservation__dates-button" :class="{ 'is-active': isCheckOutActive}" type="button" @click.stop="toggleDatepicker">
                     {{ checkOutLabel }}
                 </button>
             </div>
+
+            <transition name="slide-down">
+                <div class="reservation__datepicker" :class="{ 'is-checkout-active': isCheckOutActive}" v-show="datepickerOpen" ref="datepicker">
+                    <DatePicker
+                        :date-start="checkIn"
+                        :date-end="checkOut"
+                        :available-from="dates.availableFrom"
+                        :available-to="dates.availableTo"
+                        :unavailableDates="dates.unavailableDates"
+                        @dateFromChanged="checkInChanged"
+                        @dateToChanged="checkOutChanged"
+                    />
+                </div>
+            </transition>
         </fieldset>
-        <DatePicker
-            :date-start="checkIn"
-            :date-end="checkOut"
-            :available-from="dates.availableFrom"
-            :available-to="dates.availableTo"
-            :unavailableDates="dates.unavailableDates"
-            @dateFromChanged="checkInChanged"
-            @dateToChanged="checkOutChanged"
-        />
     </form>
 </template>
 
@@ -47,6 +52,7 @@
         data: () => ({
             checkIn: null,
             checkOut: null,
+            datepickerOpen: false
         }),
         props: {
             price: Number,
@@ -59,6 +65,12 @@
             DatePicker
         },
         computed: {
+            isCheckInActive() {
+                return this.datepickerOpen && this.checkIn && this.checkOut;
+            },
+            isCheckOutActive() {
+                return this.datepickerOpen && !this.checkOut;
+            },
             checkInLabel() {
                 if (!this.checkIn) {
                     return 'CheckIn';
@@ -82,12 +94,18 @@
                 });
             }
         },
-        methods:  {
+        methods: {
             checkInChanged(date) {
                 this.checkIn = date;
             },
             checkOutChanged(date) {
                 this.checkOut = date;
+            },
+            toggleDatepicker() {
+                this.datepickerOpen = !this.datepickerOpen;
+            },
+            closeDatepicker() {
+                this.datepickerOpen = false;
             }
         },
         watch: {
@@ -98,6 +116,15 @@
                 },
                 immediate: true
             },
+        },
+        mounted() {
+            document.addEventListener('click', () => {
+                this.closeDatepicker();
+            });
+
+            this.$refs.datepicker.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
         }
     }
 </script>
@@ -106,11 +133,11 @@
     $color-gray: #ccc;
 
     .reservation {
-        border: 2px solid $color-gray;
+        border: 1px solid $color-gray;
         padding: 20px 25px 25px 25px;
 
         &__header {
-            border-bottom: 2px solid $color-gray;
+            border-bottom: 1px solid $color-gray;
             margin-bottom: 20px;
             padding-bottom: 20px;
         }
@@ -150,11 +177,56 @@
             padding: 5px 8px;
             letter-spacing: -0.7px;
             font-size: 19px;
+            border-radius: 4px;
+            transition: background 250ms ease-out;
+            outline: none;
+
+            &.is-active {
+                background: #9ddad4;
+            }
         }
 
         &__dates-separator {
             flex-shrink: 0;
             margin: 0 10px;
+        }
+
+        &__datepicker {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 1;
+
+            &.is-checkout-active {
+                &:before {
+                    left: 75%;
+                }
+            }
+
+            &:before {
+                content: '';
+                width: 15px;
+                height: 15px;
+                background: #00dbb1;
+                position: absolute;
+                left: calc( 25% - 16px );
+                top: 1px;
+                transform-origin: 0 0;
+                transform: rotate(-45deg);
+                z-index: -1;
+                transition: left 250ms ease-out;
+            }
+        }
+
+        .slide-down-enter,
+        .slide-down-leave-to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .slide-down-enter-active,
+        .slide-down-leave-active {
+            transition: opacity 250ms ease-out, transform 250ms ease-out;
         }
     }
 
