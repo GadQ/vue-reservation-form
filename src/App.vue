@@ -19,11 +19,15 @@
                 count: 123
             },
             dates: {
-                checkIn: new Date('2020.01.14'),
-                checkOut: new Date('2020.01.21'),
-                availableFrom: new Date('2020.01.12'),
-                availableTo: null,
+                checkIn: new Date('2020.01.15'),
+                checkOut: new Date('2020.01.17'),
+                availableFrom: new Date('2020.01.01'),
+                availableTo: new Date('2020.03.13'),
                 unavailableDates: [
+                    {
+                        from: new Date('2020.01.13'),
+                        to: new Date('2020.01.14'),
+                    },
                     {
                         from: new Date('2020.01.30'),
                         to: new Date('2020.01.30'),

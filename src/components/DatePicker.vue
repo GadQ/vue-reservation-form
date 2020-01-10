@@ -1,7 +1,7 @@
 <template>
     <div class="datepicker">
         <div class="datepicker__header">
-            <button type="button" class="datepicker__month-button" @click="prevMonth">
+            <button type="button" class="datepicker__month-button"  :class="{'is-disabled': !isPreviousMonthAvailable}" @click="prevMonth" :disabled="!isPreviousMonthAvailable">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 35" width="20"
                      class="datepicker__month-button-icon">
                     <path
@@ -49,7 +49,7 @@
 
 <script>
     export default {
-        name: 'DatePickeer',
+        name: 'DatePicker',
         data: () => ({
             dateFrom: null,
             dateTo: null,
@@ -65,7 +65,7 @@
         computed: {
             daysOfMonth() {
                 const date = new Date(this.dateShow.getTime());
-                const weeks = this.calculateWeeks(date);
+                const weeks = this.fullWeeksInMonth(date);
                 const daysFromSunday = date.getDay();
                 date.setDate(-1 * daysFromSunday);
 
@@ -84,10 +84,68 @@
                 });
                 return formatter.format(this.dateShow);
             },
+            availableToDate() {
+                if( this.dateFrom === null || this.dateTo !== null ) {
+                    return this.availableTo;
+                }
+
+                const unavailableFrom = this.unavailableDates.reduce((arr, date) => {
+                    if( this.dateFrom.getTime() < date.from.getTime()) {
+                        arr.push(date.from);
+                    }
+                    return arr;
+                }, []);
+
+                if (unavailableFrom.length === 0) {
+                    return this.availableTo;
+                }
+
+                const closestUnavailable = unavailableFrom.reduce((acc, date) => {
+                    return date.getTime() < acc.getTime() ? date : acc;
+                });
+
+                if( this.availableTo == null ) {
+                    return closestUnavailable;
+                }
+                else {
+                    return this.availableTo.getTime() < closestUnavailable.getTime() ? this.availableTo : closestUnavailable;
+                }
+            },
+            availableFromDate() {
+                if( this.dateFrom === null || this.dateTo !== null ) {
+                    return this.availableFrom;
+                }
+
+                const unavailableTo = this.unavailableDates.reduce((arr, date) => {
+                    if( this.dateFrom.getTime() > date.to.getTime()) {
+                        arr.push(date.to);
+                    }
+                    return arr;
+                }, []);
+
+                if (unavailableTo.length === 0) {
+                    return this.availableFrom;
+                }
+
+                const closestUnavailable = unavailableTo.reduce((acc, date) => {
+                    return date.getTime() > acc.getTime() ? date : acc;
+                });
+
+                if( this.availableFrom == null ) {
+                    return closestUnavailable;
+                }
+                else {
+                    return this.availableFrom.getTime() > closestUnavailable.getTime() ? this.availableFrom : closestUnavailable;
+                }
+            },
+            isPreviousMonthAvailable() {
+                const from = this.availableFrom || new Date();
+                return new Date(this.dateShow.getFullYear(), this.dateShow.getMonth(), 1) > new Date(from.getFullYear(), from.getMonth(), 1)
+            }
         },
         methods: {
             setDate(date) {
-                if( this.dateFrom !== null && this.dateTo !== null ) {
+                if( this.dateFrom === null || this.dateTo !== null ) {
                     this.dateFrom = date;
                     this.dateTo = null;
                 } else {
@@ -100,9 +158,11 @@
                     }
                 }
             },
-            calculateWeeks(date) {
-                const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-                return Math.ceil((daysInMonth + date.getDay()) / 7);
+            fullWeeksInMonth(date) {
+                return Math.ceil((this.daysInMonth(date) + date.getDay()) / 7);
+            },
+            daysInMonth(date) {
+                return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
             },
             nextMonth() {
                 const dateNew = new Date(this.dateShow.getTime());
@@ -126,7 +186,7 @@
                     return false;
                 }
 
-                return this.isInRange(date, this.availableFrom, this.availableTo);
+                return this.isInRange(date, this.availableFromDate, this.availableToDate);
             },
             isInRange(date, dateFrom, dateTo) {
                 const dateTime = date.getTime();
@@ -151,15 +211,19 @@
                 });
             },
             isDateFromPast(date) {
-                return date.getTime() <= (new Date()).getTime();
+                return date.getTime() < this.getToday().getTime();
+            },
+            getToday() {
+                const today = new Date();
+                today.setHours(0);
+                today.setMinutes(0);
+                today.setSeconds(0);
+                today.setMilliseconds(0);
+
+                return today;
             },
             isToday(date) {
-                const formatter = new Intl.DateTimeFormat('en', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                });
-                return formatter.format(date) === formatter.format(new Date());
+                return date.getTime() === this.getToday().getTime();
             },
             isMarked(day) {
                 if( this.dateTo === null ) {
@@ -175,16 +239,27 @@
             }
         },
         created() {
-            if (this.dateStart !== null) {
-                this.dateShow = this.dateStart;
-            } else {
-                const date = new Date();
-                date.setDate(1);
-                this.dateShow = date;
+            this.dateFrom = this.dateStart || null;
+            this.dateTo = this.dateEnd || null;
+
+            if( this.dateFrom === null ) {
+                this.dateFrom = new Date(this.dateTo);
+                this.dateTo = null;
+            }
+            else {
+                if( this.dateTo !== null && this.dateFrom.getTime() > this.dateTo.getTime()) {
+                    const dateTo = new Date(this.dateTo);
+                    this.dateTo = new Date(this.dateFrom);
+                    this.dateFrom = dateTo;
+                }
             }
 
-            this.dateFrom = this.dateStart;
-            this.dateTo = this.dateEnd;
+            if (this.dateStart !== null) {
+                this.dateShow = this.dateStart.getTime() > this.availableFrom.getTime() ? this.dateStart : this.availableFrom;
+            } else {
+                const today = this.getToday();
+                this.dateShow = today.getTime() > this.availableFrom.getTime() ? today : this.availableFrom;
+            }
         }
     }
 </script>
@@ -214,6 +289,12 @@
             justify-content: center;
             width: 24px;
             height: 24px;
+            transition: opacity 250ms ease-out;
+            opacity: 1;
+
+            &.is-disabled {
+                opacity: 0.25;
+            }
         }
 
         &__month-button-icon {
@@ -317,18 +398,22 @@
                 cursor: default;
             }
 
-            .is-disabled &,
-            .is-other-month & {
-                color: #ddd;
-            }
-
             .is-today & {
                 border: 2px solid $color-green;
                 color: $color-green;
             }
 
+            .is-disabled &,
+            .is-other-month & {
+                color: #ddd;
+            }
+
             .is-marked & {
                 color: $color-green;
+            }
+
+            .is-today.is-disabled & {
+                border-color: #ddd;
             }
 
             .is-first-marked &,
