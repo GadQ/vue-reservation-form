@@ -1,14 +1,16 @@
 <template>
     <div class="datepicker">
         <div class="datepicker__header">
-            <button type="button" class="datepicker__month-button"  :class="{'is-disabled': !isPreviousMonthAvailable}" @click="prevMonth" :disabled="!isPreviousMonthAvailable">
+            <button type="button" class="datepicker__month-button" @click="prevMonth" :disabled="!isPreviousMonthAvailable">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 35" width="20"
                      class="datepicker__month-button-icon">
                     <path
                         d="M6.7 17.5L19.75 3.89a.89.89 0 00-.02-1.24L17.41.26a.85.85 0 00-1.22-.01L.24 16.87a.82.82 0 00-.24.63c0 .24.07.47.24.64l15.95 16.61c.33.34.88.33 1.22-.01l2.33-2.4c.34-.34.35-.9.02-1.23L6.69 17.5z"/>
                 </svg>
             </button>
-            <div class="datepicker__month-viewed">{{ currentMonthText }}</div>
+            <transition name="slide-fade" mode="out-in">
+                <div class="datepicker__month-viewed" :key="currentMonthText">{{ currentMonthText }}</div>
+            </transition>
             <button type="button" class="datepicker__month-button" @click="nextMonth">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 35" width="20"
                      class="datepicker__month-button-icon">
@@ -84,12 +86,12 @@
                 });
             },
             availableToDate() {
-                if( this.dateFrom === null || this.dateTo !== null ) {
+                if (this.dateFrom === null || this.dateTo !== null) {
                     return this.availableTo;
                 }
 
                 const unavailableFrom = this.unavailableDates.reduce((arr, date) => {
-                    if( this.dateFrom.getTime() < date.from.getTime()) {
+                    if (this.dateFrom.getTime() < date.from.getTime()) {
                         arr.push(date.from);
                     }
                     return arr;
@@ -103,20 +105,19 @@
                     return date.getTime() < acc.getTime() ? date : acc;
                 });
 
-                if( this.availableTo == null ) {
+                if (this.availableTo == null) {
                     return closestUnavailable;
-                }
-                else {
+                } else {
                     return this.availableTo.getTime() < closestUnavailable.getTime() ? this.availableTo : closestUnavailable;
                 }
             },
             availableFromDate() {
-                if( this.dateFrom === null || this.dateTo !== null ) {
+                if (this.dateFrom === null || this.dateTo !== null) {
                     return this.availableFrom;
                 }
 
                 const unavailableTo = this.unavailableDates.reduce((arr, date) => {
-                    if( this.dateFrom.getTime() > date.to.getTime()) {
+                    if (this.dateFrom.getTime() > date.to.getTime()) {
                         arr.push(date.to);
                     }
                     return arr;
@@ -130,10 +131,9 @@
                     return date.getTime() > acc.getTime() ? date : acc;
                 });
 
-                if( this.availableFrom == null ) {
+                if (this.availableFrom == null) {
                     return closestUnavailable;
-                }
-                else {
+                } else {
                     return this.availableFrom.getTime() > closestUnavailable.getTime() ? this.availableFrom : closestUnavailable;
                 }
             },
@@ -144,15 +144,14 @@
         },
         methods: {
             setDate(date) {
-                if( this.dateFrom === null || this.dateTo !== null ) {
+                if (this.dateFrom === null || this.dateTo !== null) {
                     this.dateFrom = date;
                     this.dateTo = null;
                 } else {
-                    if( date.getTime() < this.dateFrom.getTime()){
+                    if (date.getTime() < this.dateFrom.getTime()) {
                         this.dateTo = this.dateFrom;
                         this.dateFrom = date
-                    }
-                    else {
+                    } else {
                         this.dateTo = date;
                     }
                 }
@@ -190,7 +189,7 @@
             isInRange(date, dateFrom, dateTo) {
                 const dateTime = date.getTime();
 
-                if( dateFrom === null && dateTo === null ) {
+                if (dateFrom === null && dateTo === null) {
                     return false;
                 }
 
@@ -229,7 +228,7 @@
                 return date.getTime() === this.getToday().getTime();
             },
             isMarked(day) {
-                if( this.dateTo === null ) {
+                if (this.dateTo === null) {
                     return false;
                 }
                 return this.isInRange(day, this.dateFrom, this.dateTo);
@@ -239,36 +238,40 @@
             },
             isLastMarked(day) {
                 return this.dateTo !== null && day.getTime() === this.dateTo.getTime();
+            },
+            initVisibleMonth() {
+                const {dateFrom, availableFrom} = this;
+
+                if (dateFrom !== null) {
+                    this.dateShow = dateFrom.getTime() > availableFrom.getTime() ? dateFrom : availableFrom;
+                } else {
+                    const today = this.getToday();
+                    this.dateShow = today.getTime() > availableFrom.getTime() ? today : availableFrom;
+                }
             }
         },
         created() {
             this.dateFrom = this.dateStart || null;
             this.dateTo = this.dateEnd || null;
 
-            if( this.dateFrom === null && this.dateTo !== null ) {
+            if (this.dateFrom === null && this.dateTo !== null) {
                 this.dateFrom = new Date(this.dateTo);
                 this.dateTo = null;
-            }
-            else {
-                if( this.dateTo !== null && this.dateFrom.getTime() > this.dateTo.getTime()) {
+            } else {
+                if (this.dateTo !== null && this.dateFrom.getTime() > this.dateTo.getTime()) {
                     const dateTo = new Date(this.dateTo);
                     this.dateTo = new Date(this.dateFrom);
                     this.dateFrom = dateTo;
                 }
             }
 
-            if (this.dateFrom !== null) {
-                this.dateShow = this.dateFrom.getTime() > this.availableFrom.getTime() ? this.dateFrom : this.availableFrom;
-            } else {
-                const today = this.getToday();
-                this.dateShow = today.getTime() > this.availableFrom.getTime() ? today : this.availableFrom;
-            }
+            this.initVisibleMonth();
         },
         watch: {
-            dateFrom(date){
+            dateFrom(date) {
                 this.$emit('dateFromChanged', date);
             },
-            dateTo(date){
+            dateTo(date) {
                 this.$emit('dateToChanged', date);
             }
         }
@@ -278,6 +281,14 @@
 <style lang="scss">
     $color-green: #00dbb1;
     $color-green-light: #c3fef8;
+
+    @mixin disabled-cursor-placeholder {
+        cursor: default;
+
+        @supports (cursor: not-allowed) {
+            cursor: not-allowed;
+        }
+    }
 
     .datepicker {
         width: 366px;
@@ -300,10 +311,17 @@
             justify-content: center;
             width: 24px;
             height: 24px;
-            transition: opacity 250ms ease-out;
+            transition: opacity 250ms ease-out, transform 250ms ease-out;
             opacity: 1;
+            
+            &:hover,
+            &:focus {
+                outline: none;
+                transform: scale(1.2);
+            }
 
-            &.is-disabled {
+            &[disabled] {
+                @include disabled-cursor-placeholder;
                 opacity: 0.25;
             }
         }
@@ -407,8 +425,32 @@
             z-index: 1;
             outline: none;
 
+            &:hover,
+            &:focus {
+                &:after {
+                    opacity: 0.5;
+                    transform: translate(-50%, -50%) scale( 1 );
+                }
+            }
+
+            &:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale( 0.5 );
+                z-index: 1;
+                width: 30px;
+                height: 30px;
+                background: transparent;
+                border: 2px solid;
+                border-radius: 50%;
+                opacity: 0;
+                transition: transform 250ms ease-out, opacity 250ms ease-out;
+            }
+
             &[disabled] {
-                cursor: default;
+                @include disabled-cursor-placeholder;
             }
 
             .is-today & {
@@ -435,5 +477,19 @@
                 color: #fff;
             }
         }
+    }
+
+    .slide-fade-enter-active {
+        transition: transform 200ms ease-out, opacity 200ms ease-out;
+    }
+
+    .slide-fade-leave-active {
+        transition: transform 100ms ease-out, opacity 100ms ease-out;
+    }
+
+    .slide-fade-enter,
+    .slide-fade-leave-to {
+        transform: translateY(10px) scale(0.8);
+        opacity: 0;
     }
 </style>
