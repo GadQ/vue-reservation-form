@@ -27,7 +27,7 @@
             </div>
 
             <transition name="slide-down">
-                <div class="reservation__datepicker" :class="{ 'is-checkout-active': isCheckOutActive}" v-show="datepickerOpen" ref="datepicker">
+                <div class="reservation__datepicker" :class="{ 'is-checkout-active': isCheckOutActive}" v-show="datepickerOpen" ref="datepicker" @click.stop>
                     <DatePicker
                         :date-start="checkIn"
                         :date-end="checkOut"
@@ -118,13 +118,10 @@
             },
         },
         mounted() {
-            document.addEventListener('click', () => {
-                this.closeDatepicker();
-            });
-
-            this.$refs.datepicker.addEventListener('click', (event) => {
-                event.stopPropagation();
-            });
+            document.addEventListener('click', this.closeDatepicker);
+        },
+        destroyed() {
+            document.removeEventListener('click', this.closeDatepicker);
         }
     }
 </script>
