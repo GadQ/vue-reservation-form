@@ -25,19 +25,21 @@
             rating: Object
         },
         chooseStar(rateIndex, rate) {
+            const minHalfTreshold = 0.3;
+            const maxHalfTreshold = 0.6;
             const diff = Number((rate - (rateIndex - 1)).toFixed(2));
 
-            if (diff > 0.3 && diff <= 0.6) {
+            if (diff > minHalfTreshold && diff <= maxHalfTreshold) {
                 return 'is-half';
             }
-            if (diff > 0.6) {
+
+            if (diff > maxHalfTreshold) {
                 return 'is-full';
             }
         },
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
     $color-full: #38787a;
     $color-empty: #cbc7c9;
@@ -73,5 +75,4 @@
             font-size: 13px;
         }
     }
-
 </style>
