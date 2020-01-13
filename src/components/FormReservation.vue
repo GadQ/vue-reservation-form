@@ -93,7 +93,7 @@
                 return this.datepickerOpen && this.checkIn && this.checkOut;
             },
             isCheckOutActive() {
-                return this.datepickerOpen && !this.checkOut;
+                return this.datepickerOpen && this.checkIn && !this.checkOut;
             },
             checkInLabel() {
                 if (!this.checkIn) {
