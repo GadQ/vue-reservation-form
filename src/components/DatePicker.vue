@@ -1,7 +1,8 @@
 <template>
     <div class="datepicker">
         <div class="datepicker__header">
-            <button type="button" class="datepicker__month-button" @click="prevMonth" :disabled="!isPreviousMonthAvailable">
+            <button type="button" class="datepicker__month-button" @click="prevMonth"
+                    :disabled="!isPreviousMonthAvailable">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 35" width="20"
                      class="datepicker__month-button-icon">
                     <path
@@ -41,7 +42,8 @@
                      }"
                      v-for="(day, dayIndex) in daysOfMonth" :key="dayIndex">
                     <transition name="fade" mode="out-in">
-                        <button type="button" class="datepicker__day-button" @click="setDate(day)" :disabled="!isDateAvailable(day)" :key="day.getTime()">
+                        <button type="button" class="datepicker__day-button" @click="setDate(day)"
+                                :disabled="!isDateAvailable(day)" :key="day.getTime()">
                             {{day.getDate()}}
                         </button>
                     </transition>
@@ -52,6 +54,8 @@
 </template>
 
 <script>
+    import * as dateUtils from '../utils/date';
+
     export default {
         name: 'DatePicker',
         data: () => ({
@@ -68,15 +72,15 @@
         },
         computed: {
             daysOfMonth() {
-                const date = new Date(this.dateShow.getTime());
-                const weeks = this.fullWeeksInMonth(date);
+                const date = dateUtils.getFirstDayOfMonth(this.dateShow);
+                const weeks = dateUtils.getFullWeeksInMonth(date);
                 const daysFromSunday = date.getDay();
-                date.setDate(-1 * daysFromSunday);
+                date.setDate(-1 * daysFromSunday + 1);
 
                 const days = [];
-                for (let i = 0; i < weeks * 7; i++) {
+                for (let i = 0; i < weeks * dateUtils.DAYS_IN_WEEK; i++) {
+                    days.push(new Date(date));
                     date.setDate(date.getDate() + 1);
-                    days.push(new Date(date.getTime()));
                 }
 
                 return days;
@@ -93,7 +97,7 @@
                 }
 
                 const unavailableFrom = this.unavailableDates.reduce((arr, date) => {
-                    if (this.dateFrom.getTime() < date.from.getTime()) {
+                    if (this.dateFrom < date.from) {
                         arr.push(date.from);
                     }
                     return arr;
@@ -103,14 +107,14 @@
                     return this.availableTo;
                 }
 
-                const closestUnavailable = unavailableFrom.reduce((acc, date) => {
-                    return date.getTime() < acc.getTime() ? date : acc;
+                const closestUnavailable = unavailableFrom.reduce((dateMin, date) => {
+                    return date < dateMin ? date : dateMin;
                 });
 
                 if (this.availableTo == null) {
                     return closestUnavailable;
                 } else {
-                    return this.availableTo.getTime() < closestUnavailable.getTime() ? this.availableTo : closestUnavailable;
+                    return this.availableTo < closestUnavailable ? this.availableTo : closestUnavailable;
                 }
             },
             availableFromDate() {
@@ -119,7 +123,7 @@
                 }
 
                 const unavailableTo = this.unavailableDates.reduce((arr, date) => {
-                    if (this.dateFrom.getTime() > date.to.getTime()) {
+                    if (this.dateFrom > date.to) {
                         arr.push(date.to);
                     }
                     return arr;
@@ -129,19 +133,19 @@
                     return this.availableFrom;
                 }
 
-                const closestUnavailable = unavailableTo.reduce((acc, date) => {
-                    return date.getTime() > acc.getTime() ? date : acc;
+                const closestUnavailable = unavailableTo.reduce((maxDate, date) => {
+                    return date > maxDate ? date : maxDate;
                 });
 
                 if (this.availableFrom == null) {
                     return closestUnavailable;
                 } else {
-                    return this.availableFrom.getTime() > closestUnavailable.getTime() ? this.availableFrom : closestUnavailable;
+                    return this.availableFrom > closestUnavailable ? this.availableFrom : closestUnavailable;
                 }
             },
             isPreviousMonthAvailable() {
                 const from = this.availableFrom || new Date();
-                return new Date(this.dateShow.getFullYear(), this.dateShow.getMonth(), 1) > new Date(from.getFullYear(), from.getMonth(), 1)
+                return dateUtils.getFirstDayOfMonth(this.dateShow) > dateUtils.getFirstDayOfMonth(from);
             }
         },
         methods: {
@@ -150,7 +154,7 @@
                     this.dateFrom = date;
                     this.dateTo = null;
                 } else {
-                    if (date.getTime() < this.dateFrom.getTime()) {
+                    if (date < this.dateFrom) {
                         this.dateTo = this.dateFrom;
                         this.dateFrom = date
                     } else {
@@ -158,19 +162,13 @@
                     }
                 }
             },
-            fullWeeksInMonth(date) {
-                return Math.ceil((this.daysInMonth(date) + date.getDay()) / 7);
-            },
-            daysInMonth(date) {
-                return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-            },
             nextMonth() {
-                const dateNew = new Date(this.dateShow.getTime());
+                const dateNew = new Date(this.dateShow);
                 dateNew.setMonth(dateNew.getMonth() + 1);
                 this.dateShow = dateNew;
             },
             prevMonth() {
-                const dateNew = new Date(this.dateShow.getTime());
+                const dateNew = new Date(this.dateShow);
                 dateNew.setMonth(dateNew.getMonth() - 1);
                 this.dateShow = dateNew;
             },
@@ -178,7 +176,7 @@
                 return date.getMonth() !== this.dateShow.getMonth();
             },
             isDateAvailable(date) {
-                if (this.isDateFromPast(date)) {
+                if (dateUtils.isFromPast(date)) {
                     return false;
                 }
 
@@ -186,24 +184,7 @@
                     return false;
                 }
 
-                return this.isInRange(date, this.availableFromDate, this.availableToDate);
-            },
-            isInRange(date, dateFrom, dateTo) {
-                const dateTime = date.getTime();
-
-                if (dateFrom === null && dateTo === null) {
-                    return false;
-                }
-
-                if (dateFrom !== null && dateTime < dateFrom.getTime()) {
-                    return false
-                }
-
-                if (dateTo !== null && dateTime > dateTo.getTime()) {
-                    return false;
-                }
-
-                return true;
+                return dateUtils.isInRange(date, this.availableFromDate, this.availableToDate);
             },
             isInUnavailableDates(date) {
                 if (this.unavailableDates.length === 0) {
@@ -211,29 +192,17 @@
                 }
 
                 return this.unavailableDates.some(dateRange => {
-                    return this.isInRange(date, dateRange.from, dateRange.to);
+                    return dateUtils.isInRange(date, dateRange.from, dateRange.to);
                 });
             },
-            isDateFromPast(date) {
-                return date.getTime() < this.getToday().getTime();
-            },
-            getToday() {
-                const today = new Date();
-                today.setHours(0);
-                today.setMinutes(0);
-                today.setSeconds(0);
-                today.setMilliseconds(0);
-
-                return today;
-            },
             isToday(date) {
-                return date.getTime() === this.getToday().getTime();
+                return dateUtils.isToday(date);
             },
             isMarked(day) {
                 if (this.dateTo === null) {
                     return false;
                 }
-                return this.isInRange(day, this.dateFrom, this.dateTo);
+                return dateUtils.isInRange(day, this.dateFrom, this.dateTo);
             },
             isFirstMarked(day) {
                 return this.dateFrom !== null && day.getTime() === this.dateFrom.getTime();
@@ -245,29 +214,27 @@
                 const {dateFrom, availableFrom} = this;
 
                 if (dateFrom !== null) {
-                    this.dateShow = dateFrom.getTime() > availableFrom.getTime() ? dateFrom : availableFrom;
+                    this.dateShow = dateFrom > availableFrom ? dateFrom : availableFrom;
                 } else {
-                    const today = this.getToday();
-                    this.dateShow = today.getTime() > availableFrom.getTime() ? today : availableFrom;
+                    const today = dateUtils.getToday();
+                    this.dateShow = today > availableFrom ? today : availableFrom;
+                }
+            },
+            initDates() {
+                this.dateFrom = this.dateStart || null;
+                this.dateTo = this.dateEnd || null;
+
+                if (this.dateFrom === null && this.dateTo !== null) {
+                    this.dateFrom = new Date(this.dateTo);
+                    this.dateTo = null;
+                } else {
+                    if (this.dateTo !== null && this.dateFrom > this.dateTo) {
+                        const dateTo = new Date(this.dateTo);
+                        this.dateTo = new Date(this.dateFrom);
+                        this.dateFrom = dateTo;
+                    }
                 }
             }
-        },
-        created() {
-            this.dateFrom = this.dateStart || null;
-            this.dateTo = this.dateEnd || null;
-
-            if (this.dateFrom === null && this.dateTo !== null) {
-                this.dateFrom = new Date(this.dateTo);
-                this.dateTo = null;
-            } else {
-                if (this.dateTo !== null && this.dateFrom.getTime() > this.dateTo.getTime()) {
-                    const dateTo = new Date(this.dateTo);
-                    this.dateTo = new Date(this.dateFrom);
-                    this.dateFrom = dateTo;
-                }
-            }
-
-            this.initVisibleMonth();
         },
         watch: {
             dateFrom(date) {
@@ -275,6 +242,20 @@
             },
             dateTo(date) {
                 this.$emit('dateToChanged', date);
+            },
+            dateStart: {
+                handler: function () {
+                    this.initDates();
+                    this.initVisibleMonth();
+                },
+                immediate: true
+            },
+            dateEnd: {
+                handler: function () {
+                    this.initDates();
+                    this.initVisibleMonth();
+                },
+                immediate: true
             }
         }
     }
@@ -342,7 +323,7 @@
             height: 24px;
             transition: opacity 250ms ease-out, transform 250ms ease-out;
             opacity: 1;
-            
+
             &:hover,
             &:focus {
                 outline: none;
@@ -441,7 +422,7 @@
             &:not([disabled]):focus {
                 &:after {
                     opacity: 0.5;
-                    transform: translate(-50%, -50%) scale( 1 );
+                    transform: translate(-50%, -50%) scale(1);
                 }
             }
 
@@ -450,7 +431,7 @@
                 position: absolute;
                 top: 50%;
                 left: 50%;
-                transform: translate(-50%, -50%) scale( 0.5 );
+                transform: translate(-50%, -50%) scale(0.5);
                 z-index: 1;
                 width: 30px;
                 height: 30px;
