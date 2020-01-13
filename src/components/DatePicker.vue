@@ -64,11 +64,26 @@
             dateShow: null,
         }),
         props: {
-            dateStart: Date,
-            dateEnd: Date,
-            availableFrom: Date,
-            availableTo: Date,
-            unavailableDates: Array
+            dateStart: {
+                type: [Date, null],
+                default: null
+            },
+            dateEnd: {
+                type: [Date, null],
+                default: null
+            },
+            availableFrom: {
+                type: [Date, null],
+                default: null
+            },
+            availableTo: {
+                type: [Date, null],
+                default: null
+            },
+            unavailableDates: {
+                type: Array,
+                default: () => []
+            }
         },
         computed: {
             daysOfMonth() {
@@ -229,9 +244,9 @@
                     this.dateTo = null;
                 } else {
                     if (this.dateTo !== null && this.dateFrom > this.dateTo) {
-                        const dateTo = new Date(this.dateTo);
+                        const dateTmp = new Date(this.dateTo);
                         this.dateTo = new Date(this.dateFrom);
-                        this.dateFrom = dateTo;
+                        this.dateFrom = dateTmp;
                     }
                 }
             }
