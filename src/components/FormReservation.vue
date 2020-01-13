@@ -1,5 +1,5 @@
 <template>
-    <form action="#" class="reservation">
+    <form action="#" class="reservation" method="post">
         <div class="reservation__header">
             <div class="reservation__price">
                 <span class="sr-only">Price:</span>{{ price }} {{ currency }}
@@ -40,6 +40,17 @@
                 </div>
             </transition>
         </fieldset>
+
+        <div class="reservation__field">
+            <label class="reservation__field-label">Full name</label>
+            <input class="reservation__field-input" type="text" v-model="fullName">
+        </div>
+
+        <div class="reservation__footer">
+            <button type="submit" class="reservation__submit">
+                <span class="reservation__submit-text">Send reservation</span>
+            </button>
+        </div>
     </form>
 </template>
 
@@ -52,7 +63,8 @@
         data: () => ({
             checkIn: null,
             checkOut: null,
-            datepickerOpen: false
+            datepickerOpen: false,
+            fullName: null
         }),
         props: {
             price: Number,
@@ -102,14 +114,16 @@
                 this.checkOut = date;
             },
             toggleDatepicker() {
-                this.datepickerOpen = !this.datepickerOpen;
-                if( !this.datepickerOpen ) {
+                if (this.datepickerOpen) {
                     this.$refs.checkInButton.focus();
                 }
+                this.datepickerOpen = !this.datepickerOpen;
             },
             closeDatepicker() {
+                if( this.datepickerOpen ) {
+                    this.$refs.checkInButton.focus();
+                }
                 this.datepickerOpen = false;
-                this.$refs.checkInButton.focus();
             },
             handleKeyboardEvents(event) {
                 if( event.key === 'Escape' ) {
@@ -139,6 +153,18 @@
 
 <style lang="scss">
     $color-gray: #ccc;
+    $color-green: #00dbb1;
+
+    .slide-down-enter,
+    .slide-down-leave-to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    .slide-down-enter-active,
+    .slide-down-leave-active {
+        transition: opacity 250ms ease-out, transform 250ms ease-out;
+    }
 
     .reservation {
         border: 1px solid $color-gray;
@@ -235,15 +261,77 @@
             }
         }
 
-        .slide-down-enter,
-        .slide-down-leave-to {
-            opacity: 0;
-            transform: translateY(-20px);
+        &__field {
+            margin-bottom: 15px;
         }
 
-        .slide-down-enter-active,
-        .slide-down-leave-active {
-            transition: opacity 250ms ease-out, transform 250ms ease-out;
+        &__field-label {
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        &__field-input {
+            display: block;
+            width: 100%;
+            height: 40px;
+            border: 1px solid $color-gray;
+            border-radius: 4px;
+            padding: 5px 10px;
+            transition: box-shadow 250ms ease-out;
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 3px $color-green;
+                border-color: $color-green;
+            }
+        }
+
+        &__footer {
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        &__submit {
+            padding: 16px 20px 15px 20px;
+            border: none;
+            background: #da5f5e;
+            font-weight: 600;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            
+            &:hover,
+            &:focus {
+                outline: none;
+
+                &:after {
+                    transform: scaleX(1);
+                }
+            }
+
+            &:after {
+                content: '';
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 1;
+                background: #d94141;
+                transform: scaleX(0);
+                transform-origin: 0 0;
+                transition: transform 250ms ease-out;
+            }
+        }
+
+        &__submit-text {
+            position: relative;
+            z-index: 2;
         }
     }
 
