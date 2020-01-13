@@ -13,7 +13,7 @@
         <fieldset class="reservation__dates">
             <legend class="reservation__dates-legend">Dates</legend>
             <div class="reservation__dates-buttons">
-                <button class="reservation__dates-button" :class="{ 'is-active': isCheckInActive}" type="button" @click.stop="toggleDatepicker">
+                <button class="reservation__dates-button" :class="{ 'is-active': isCheckInActive}" type="button" @click.stop="toggleDatepicker" ref="checkInButton">
                     {{ checkInLabel }}
                 </button>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 22" width="28"
@@ -27,7 +27,7 @@
             </div>
 
             <transition name="slide-down">
-                <div class="reservation__datepicker" :class="{ 'is-checkout-active': isCheckOutActive}" v-show="datepickerOpen" ref="datepicker" @click.stop>
+                <div class="reservation__datepicker" :class="{ 'is-checkout-active': isCheckOutActive}" v-show="datepickerOpen" @click.stop>
                     <DatePicker
                         :date-start="checkIn"
                         :date-end="checkOut"
@@ -103,9 +103,18 @@
             },
             toggleDatepicker() {
                 this.datepickerOpen = !this.datepickerOpen;
+                if( !this.datepickerOpen ) {
+                    this.$refs.checkInButton.focus();
+                }
             },
             closeDatepicker() {
                 this.datepickerOpen = false;
+                this.$refs.checkInButton.focus();
+            },
+            handleKeyboardEvents(event) {
+                if( event.key === 'Escape' ) {
+                    this.closeDatepicker();
+                }
             }
         },
         watch: {
@@ -119,9 +128,11 @@
         },
         mounted() {
             document.addEventListener('click', this.closeDatepicker);
+            document.addEventListener('keyup', this.handleKeyboardEvents);
         },
         destroyed() {
             document.removeEventListener('click', this.closeDatepicker);
+            document.removeEventListener('keyup', this.handleKeyboardEvents);
         }
     }
 </script>
@@ -177,6 +188,11 @@
             font-size: 19px;
             border-radius: 4px;
             transition: background 250ms ease-out;
+
+            &:hover,
+            &:focus {
+                background: #ddd;
+            }
 
             &:focus {
                 outline: none;
