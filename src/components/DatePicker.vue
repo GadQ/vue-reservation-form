@@ -432,7 +432,10 @@
             padding-top: 3px;
             position: relative;
             z-index: 1;
-            outline: none;
+
+            &:focus {
+                outline: none;
+            }
 
             &:not([disabled]):hover,
             &:not([disabled]):focus {
