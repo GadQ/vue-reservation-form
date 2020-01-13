@@ -261,6 +261,7 @@
 
         &__dates {
             position: relative;
+            z-index: 3;
             border: 1px solid $color-gray;
             margin: 45px 0 0 0;
             padding: 8px;
@@ -315,7 +316,6 @@
             position: absolute;
             top: calc(100% + 6px);
             left: 0;
-            z-index: 1;
 
             &.is-checkout-active {
                 &:before {
