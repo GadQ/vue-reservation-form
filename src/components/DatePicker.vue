@@ -1,7 +1,8 @@
 <template>
     <div class="datepicker">
         <div class="datepicker__header">
-            <button type="button" class="datepicker__month-button" @click="prevMonth" :disabled="!isPreviousMonthAvailable">
+            <button type="button" class="datepicker__month-button" @click="prevMonth"
+                    :disabled="!isPreviousMonthAvailable">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 35" width="20"
                      class="datepicker__month-button-icon">
                     <path
@@ -41,7 +42,8 @@
                      }"
                      v-for="(day, dayIndex) in daysOfMonth" :key="dayIndex">
                     <transition name="fade" mode="out-in">
-                        <button type="button" class="datepicker__day-button" @click="setDate(day)" :disabled="!isDateAvailable(day)" :key="day.getTime()">
+                        <button type="button" class="datepicker__day-button" @click="setDate(day)"
+                                :disabled="!isDateAvailable(day)" :key="day.getTime()">
                             {{day.getDate()}}
                         </button>
                     </transition>
@@ -95,7 +97,7 @@
                 }
 
                 const unavailableFrom = this.unavailableDates.reduce((arr, date) => {
-                    if (this.dateFrom < date.from ) {
+                    if (this.dateFrom < date.from) {
                         arr.push(date.from);
                     }
                     return arr;
@@ -217,24 +219,22 @@
                     const today = dateUtils.getToday();
                     this.dateShow = today > availableFrom ? today : availableFrom;
                 }
-            }
-        },
-        created() {
-            this.dateFrom = this.dateStart || null;
-            this.dateTo = this.dateEnd || null;
+            },
+            initDates() {
+                this.dateFrom = this.dateStart || null;
+                this.dateTo = this.dateEnd || null;
 
-            if (this.dateFrom === null && this.dateTo !== null) {
-                this.dateFrom = new Date(this.dateTo);
-                this.dateTo = null;
-            } else {
-                if (this.dateTo !== null && this.dateFrom > this.dateTo) {
-                    const dateTo = new Date(this.dateTo);
-                    this.dateTo = new Date(this.dateFrom);
-                    this.dateFrom = dateTo;
+                if (this.dateFrom === null && this.dateTo !== null) {
+                    this.dateFrom = new Date(this.dateTo);
+                    this.dateTo = null;
+                } else {
+                    if (this.dateTo !== null && this.dateFrom > this.dateTo) {
+                        const dateTo = new Date(this.dateTo);
+                        this.dateTo = new Date(this.dateFrom);
+                        this.dateFrom = dateTo;
+                    }
                 }
             }
-
-            this.initVisibleMonth();
         },
         watch: {
             dateFrom(date) {
@@ -242,6 +242,20 @@
             },
             dateTo(date) {
                 this.$emit('dateToChanged', date);
+            },
+            dateStart: {
+                handler: function () {
+                    this.initDates();
+                    this.initVisibleMonth();
+                },
+                immediate: true
+            },
+            dateEnd: {
+                handler: function () {
+                    this.initDates();
+                    this.initVisibleMonth();
+                },
+                immediate: true
             }
         }
     }
@@ -309,7 +323,7 @@
             height: 24px;
             transition: opacity 250ms ease-out, transform 250ms ease-out;
             opacity: 1;
-            
+
             &:hover,
             &:focus {
                 outline: none;
@@ -408,7 +422,7 @@
             &:not([disabled]):focus {
                 &:after {
                     opacity: 0.5;
-                    transform: translate(-50%, -50%) scale( 1 );
+                    transform: translate(-50%, -50%) scale(1);
                 }
             }
 
@@ -417,7 +431,7 @@
                 position: absolute;
                 top: 50%;
                 left: 50%;
-                transform: translate(-50%, -50%) scale( 0.5 );
+                transform: translate(-50%, -50%) scale(0.5);
                 z-index: 1;
                 width: 30px;
                 height: 30px;
