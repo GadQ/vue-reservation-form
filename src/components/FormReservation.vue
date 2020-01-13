@@ -163,6 +163,7 @@
 
         &__dates-buttons {
             display: flex;
+            width: 100%;
         }
 
         &__dates-button {
@@ -176,7 +177,10 @@
             font-size: 19px;
             border-radius: 4px;
             transition: background 250ms ease-out;
-            outline: none;
+
+            &:focus {
+                outline: none;
+            }
 
             &.is-active {
                 background: #9ddad4;
