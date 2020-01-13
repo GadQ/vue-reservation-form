@@ -39,10 +39,12 @@
                         'is-first-marked': isFirstMarked(day),
                         'is-last-marked': isLastMarked(day),
                      }"
-                     v-for="day in daysOfMonth" :key="day.getTime()">
-                    <button type="button" class="datepicker__day-button" @click="setDate(day)" :disabled="!isDateAvailable(day)">
-                        {{day.getDate()}}
-                    </button>
+                     v-for="(day, dayIndex) in daysOfMonth" :key="dayIndex">
+                    <transition name="fade" mode="out-in">
+                        <button type="button" class="datepicker__day-button" @click="setDate(day)" :disabled="!isDateAvailable(day)" :key="day.getTime()">
+                            {{day.getDate()}}
+                        </button>
+                    </transition>
                 </div>
             </div>
         </div>
@@ -290,6 +292,33 @@
         }
     }
 
+    .slide-fade-enter-active {
+        transition: transform 200ms ease-out, opacity 200ms ease-out;
+    }
+
+    .slide-fade-leave-active {
+        transition: transform 100ms ease-out, opacity 100ms ease-out;
+    }
+
+    .slide-fade-enter,
+    .slide-fade-leave-to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    .fade-enter-active {
+        transition: opacity 200ms linear;
+    }
+
+    .fade-leave-active {
+        transition: opacity 100ms linear;
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+        opacity: 0;
+    }
+
     .datepicker {
         width: 366px;
 
@@ -375,39 +404,19 @@
             &.is-marked {
                 background: $color-green-light;
                 color: $color-green;
-            }
 
-            &.is-first-marked,
-            &.is-last-marked {
-                &:before {
-                    content: '';
-                    display: block;
-                    width: 50%;
-                    height: 100%;
-                    position: absolute;
-                    z-index: 0;
-                    background: #fff;
+                &.is-first-marked {
+                    background: linear-gradient(90deg, transparent 0%, transparent 50%, $color-green-light 50%, $color-green-light 100%);
+                }
+
+                &.is-last-marked {
+                    background: linear-gradient(90deg, $color-green-light 0%, $color-green-light 50%, transparent 50%, transparent 100%);
+                }
+
+                &.is-first-marked.is-last-marked {
+                    background: none;
                 }
             }
-
-            &.is-first-marked {
-                &:before {
-                    left: 0;
-                }
-            }
-
-            &.is-last-marked {
-                &:before {
-                    right: 0;
-                }
-            }
-
-            &.is-first-marked.is-last-marked {
-                &:before {
-                    width: 100%;
-                }
-            }
-
         }
 
         &__day-button {
@@ -425,8 +434,8 @@
             z-index: 1;
             outline: none;
 
-            &:hover,
-            &:focus {
+            &:not([disabled]):hover,
+            &:not([disabled]):focus {
                 &:after {
                     opacity: 0.5;
                     transform: translate(-50%, -50%) scale( 1 );
@@ -477,19 +486,5 @@
                 color: #fff;
             }
         }
-    }
-
-    .slide-fade-enter-active {
-        transition: transform 200ms ease-out, opacity 200ms ease-out;
-    }
-
-    .slide-fade-leave-active {
-        transition: transform 100ms ease-out, opacity 100ms ease-out;
-    }
-
-    .slide-fade-enter,
-    .slide-fade-leave-to {
-        transform: translateY(10px) scale(0.8);
-        opacity: 0;
     }
 </style>
