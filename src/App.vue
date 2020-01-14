@@ -19,22 +19,18 @@
                 count: 123
             },
             dates: {
-                checkIn: new Date('2020/01/15'),
-                checkOut: new Date('2020/01/17'),
-                availableFrom: new Date('2020/01/01'),
-                availableTo: new Date('2020/03/13'),
+                checkIn: new Date('2020/01/22'),
+                checkOut: new Date('2020/01/24'),
+                availableFrom: new Date('2019/12/12'),
+                availableTo: new Date('2020/03/20'),
                 unavailableDates: [
                     {
-                        from: new Date('2020/01/13'),
-                        to: new Date('2020/01/14'),
+                        from: new Date('2020/01/28'),
+                        to: new Date('2020/01/28'),
                     },
                     {
-                        from: new Date('2020/01/30'),
-                        to: new Date('2020/01/30'),
-                    },
-                    {
-                        from: new Date('2020/02/03'),
-                        to: new Date('2020/02/06'),
+                        from: new Date('2020/02/11'),
+                        to: new Date('2020/02/13'),
                     }
                 ]
             }
