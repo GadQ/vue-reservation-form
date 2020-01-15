@@ -298,14 +298,6 @@
     $datepicker-color-day-first-last-marked-text: #fff !default;
     $datepicker-color-day-first-last-marked-background: #00dbb1 !default;
 
-    @mixin disabled-cursor-placeholder {
-        cursor: default;
-
-        @supports (cursor: not-allowed) {
-            cursor: not-allowed;
-        }
-    }
-
     .slide-fade-enter-active {
         transition: transform 200ms ease-out, opacity 200ms ease-out;
     }

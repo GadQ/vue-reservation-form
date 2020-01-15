@@ -9,3 +9,11 @@
         font-style: $font-style;
     }
 }
+
+@mixin disabled-cursor-placeholder {
+    cursor: default;
+
+    @supports (cursor: not-allowed) {
+        cursor: not-allowed;
+    }
+}
