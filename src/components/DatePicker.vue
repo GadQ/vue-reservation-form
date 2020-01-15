@@ -294,7 +294,7 @@
     $datepicker-color-day-today-text: #00dbb1 !default;
     $datepicker-color-day-today-disabled-border: #ddd !default;
     $datepicker-color-day-disabled-text: #ddd !default;
-    $datepicker-color-day-other-month-text: #ddd !default;
+    $datepicker-color-day-other-month-text: #bbb !default;
     $datepicker-color-day-first-last-marked-text: #fff !default;
     $datepicker-color-day-first-last-marked-background: #00dbb1 !default;
 
@@ -484,12 +484,12 @@
                 color: $datepicker-color-day-today-text;
             }
 
-            .is-disabled & {
-                color: $datepicker-color-day-disabled-text;
-            }
-
             .is-other-month & {
                 color: $datepicker-color-day-other-month-text;
+            }
+
+            .is-disabled & {
+                color: $datepicker-color-day-disabled-text;
             }
 
             .is-marked & {
