@@ -216,8 +216,19 @@
 </script>
 
 <style lang="scss">
-    $color-gray: #ccc;
-    $color-green: #00dbb1;
+    $reservation-color-border: #ccc !default;
+    $reservation-color-header-border: #ccc !default;
+    $reservation-color-dates-border: #ccc !default;
+    $reservation-color-date-button-hover-background: #ddd !default;
+    $reservation-color-date-button-active-background: #9ddad4 !default;
+    $reservation-color-datepicker-arrow-background: #00dbb1 !default;
+    $reservation-color-input-border: #ccc !default;
+    $reservation-color-input-focus-border: #00dbb1 !default;
+    $reservation-color-input-focus-shadow: #00dbb1 !default;
+    $reservation-color-error-text: #e00 !default;
+    $reservation-color-submit-text: #fff !default;
+    $reservation-color-submit-background: #da5f5e !default;
+    $reservation-color-submit-hover-background: #d94141 !default;
 
     .fade-enter-active {
         transition: opacity 200ms linear;
@@ -244,11 +255,11 @@
     }
 
     .reservation {
-        border: 1px solid $color-gray;
+        border: 1px solid $reservation-color-border;
         padding: 20px 25px 25px 25px;
 
         &__header {
-            border-bottom: 1px solid $color-gray;
+            border-bottom: 1px solid $reservation-color-header-border;
             margin-bottom: 20px;
             padding-bottom: 20px;
         }
@@ -262,7 +273,7 @@
         &__dates {
             position: relative;
             z-index: 3;
-            border: 1px solid $color-gray;
+            border: 1px solid $reservation-color-dates-border;
             margin: 45px 0 0 0;
             padding: 8px;
             display: flex;
@@ -295,7 +306,7 @@
 
             &:hover,
             &:focus {
-                background: #ddd;
+                background: $reservation-color-date-button-hover-background;
             }
 
             &:focus {
@@ -303,7 +314,7 @@
             }
 
             &.is-active {
-                background: #9ddad4;
+                background: $reservation-color-date-button-active-background;
             }
         }
 
@@ -327,7 +338,7 @@
                 content: '';
                 width: 15px;
                 height: 15px;
-                background: #00dbb1;
+                background: $reservation-color-datepicker-arrow-background;
                 position: absolute;
                 left: calc( 25% - 16px );
                 top: 1px;
@@ -353,21 +364,21 @@
             display: block;
             width: 100%;
             height: 40px;
-            border: 1px solid $color-gray;
+            border: 1px solid $reservation-color-input-border;
             border-radius: 4px;
             padding: 5px 10px;
             transition: box-shadow 250ms ease-out;
 
             &:focus {
                 outline: none;
-                box-shadow: 0 0 3px $color-green;
-                border-color: $color-green;
+                box-shadow: 0 0 3px $reservation-color-input-focus-shadow;
+                border-color: $reservation-color-input-focus-border;
             }
         }
         
         &__field-error {
             font-size: 0.8em;
-            color: #e00;
+            color: $reservation-color-error-text;
             margin-top: 2px;
         }
 
@@ -380,10 +391,10 @@
         &__submit {
             padding: 14px 20px 13px 20px;
             border: none;
-            background: #da5f5e;
+            background: $reservation-color-submit-background;
             font-weight: 600;
             border-radius: 4px;
-            color: #fff;
+            color: $reservation-color-submit-text;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -405,7 +416,7 @@
                 left: 0;
                 top: 0;
                 z-index: 1;
-                background: #d94141;
+                background: $reservation-color-submit-hover-background;
                 transform: scaleX(0);
                 transform-origin: 0 0;
                 transition: transform 250ms ease-out;
