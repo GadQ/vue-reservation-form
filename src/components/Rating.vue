@@ -41,8 +41,8 @@
 </script>
 
 <style lang="scss">
-    $color-full: #38787a;
-    $color-empty: #cbc7c9;
+    $rating-color-star-full: #38787a !default;
+    $rating-color-star-empty: #cbc7c9 !default;
 
     .rating {
         display: flex;
@@ -54,17 +54,17 @@
         }
 
         &__star-svg {
-            fill: $color-empty;
+            fill: $rating-color-star-empty;
 
             &.is-full {
-                fill: $color-full;
+                fill: $rating-color-star-full;
             }
 
             &.is-half {
-                fill: $color-empty;
+                fill: $rating-color-star-empty;
 
                 .rating__star-svg-half {
-                    fill: $color-full;
+                    fill: $rating-color-star-full;
                 }
             }
         }
