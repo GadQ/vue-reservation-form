@@ -277,8 +277,22 @@
 </script>
 
 <style lang="scss">
-    $color-green: #00dbb1;
-    $color-green-light: #c3fef8;
+    $datepicker-color-header-background: #00dbb1 !default;
+    $datepicker-color-header-text: #fff !default;
+    $datepicker-color-change-month-arrow: #444 !default;
+    $datepicker-color-body-background: #fff !default;
+    $datepicker-color-body-border: #ddd !default;
+    $datepicker-color-day-text: #777 !default;
+    $datepicker-color-weekday-text: #bbb !default;
+    $datepicker-color-day-marked-text: #00dbb1 !default;
+    $datepicker-color-day-marked-background: #c3fef8 !default;
+    $datepicker-color-day-today-border: #00dbb1 !default;
+    $datepicker-color-day-today-text: #00dbb1 !default;
+    $datepicker-color-day-today-disabled-border: #ddd !default;
+    $datepicker-color-day-disabled-text: #ddd !default;
+    $datepicker-color-day-other-month-text: #ddd !default;
+    $datepicker-color-day-first-last-marked-text: #fff !default;
+    $datepicker-color-day-first-last-marked-background: #00dbb1 !default;
 
     @mixin disabled-cursor-placeholder {
         cursor: default;
@@ -319,10 +333,10 @@
         width: 366px;
 
         &__header {
-            background: $color-green;
+            background: $datepicker-color-header-background;
             display: flex;
             align-items: center;
-            color: #fff;
+            color: $datepicker-color-header-text;
             height: 62px;
             padding: 0 20px;
         }
@@ -352,7 +366,7 @@
         }
 
         &__month-button-icon {
-            fill: #444;
+            fill: $datepicker-color-change-month-arrow;
             width: 10px;
         }
 
@@ -365,10 +379,10 @@
         }
 
         &__body {
-            background: #fff;
+            background: $datepicker-color-body-background;
             padding: 20px;
             font-size: 13px;
-            border: 1px solid #ddd;
+            border: 1px solid $datepicker-color-body-border;
             border-top: none;
         }
 
@@ -380,7 +394,7 @@
 
         &__weekday {
             text-align: center;
-            color: #bbb;
+            color: $datepicker-color-weekday-text;
             font-weight: 600;
         }
 
@@ -398,15 +412,15 @@
             z-index: 1;
 
             &.is-marked {
-                background: $color-green-light;
-                color: $color-green;
+                background: $datepicker-color-day-marked-background;
+                color: $datepicker-color-day-marked-text;
 
                 &.is-first-marked {
-                    background: linear-gradient(90deg, transparent 0%, transparent 50%, $color-green-light 50%, $color-green-light 100%);
+                    background: linear-gradient(90deg, transparent 0%, transparent 50%, $datepicker-color-day-marked-background 50%, $datepicker-color-day-marked-background 100%);
                 }
 
                 &.is-last-marked {
-                    background: linear-gradient(90deg, $color-green-light 0%, $color-green-light 50%, transparent 50%, transparent 100%);
+                    background: linear-gradient(90deg, $datepicker-color-day-marked-background 0%, $datepicker-color-day-marked-background 50%, transparent 50%, transparent 100%);
                 }
 
                 &.is-first-marked.is-last-marked {
@@ -422,7 +436,7 @@
             font-size: 13px;
             border: none;
             background: none;
-            color: #777;
+            color: $datepicker-color-day-text;
             font-weight: 600;
             border-radius: 50%;
             padding-top: 3px;
@@ -462,27 +476,30 @@
             }
 
             .is-today & {
-                border: 2px solid $color-green;
-                color: $color-green;
+                border: 2px solid $datepicker-color-day-today-border;
+                color: $datepicker-color-day-today-text;
             }
 
-            .is-disabled &,
+            .is-disabled & {
+                color: $datepicker-color-day-disabled-text;
+            }
+
             .is-other-month & {
-                color: #ddd;
+                color: $datepicker-color-day-other-month-text;
             }
 
             .is-marked & {
-                color: $color-green;
+                color: $datepicker-color-day-marked-text;
             }
 
             .is-today.is-disabled & {
-                border-color: #ddd;
+                border-color: $datepicker-color-day-today-disabled-border;
             }
 
             .is-first-marked &,
             .is-last-marked & {
-                background: $color-green;
-                color: #fff;
+                background: $datepicker-color-day-first-last-marked-background;
+                color: $datepicker-color-day-first-last-marked-text;
             }
         }
     }
