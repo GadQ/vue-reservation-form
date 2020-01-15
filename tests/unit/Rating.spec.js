@@ -105,5 +105,18 @@ describe('Rating.vue', () => {
 
         expect(fullStarsCount).toBe(5);
     });
+
+    it('Renders proper aria-label description for rating and votes count', () => {
+        const wrapper = shallowMount(Rating, {
+            propsData: {
+                rating: {
+                    rate: 3.4,
+                    count: 123
+                }
+            }
+        });
+
+        expect(wrapper.attributes('aria-label')).toBe('Rating 3.4 / 123');
+    });
 });
 
