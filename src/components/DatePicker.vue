@@ -199,6 +199,10 @@
                     return false;
                 }
 
+                if( this.availableFromDate == null && this.availableToDate == null ) {
+                    return true;
+                }
+
                 return dateUtils.isInRange(date, this.availableFromDate, this.availableToDate);
             },
             isInUnavailableDates(date) {
