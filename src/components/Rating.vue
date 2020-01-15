@@ -1,8 +1,5 @@
 <template functional>
-    <div class="rating">
-        <div class="sr-only">
-            Rating: {{ props.rating.rate }} / {{ props.rating.count }}
-        </div>
+    <div class="rating" :aria-label="$options.getAriaLabel(props.rating.rate, props.rating.count)">
         <div class="rating__stars" aria-hidden="true">
             <span v-for="rateIndex in 5" :key="rateIndex" class="rating__star">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 10.3125" width="11" class="rating__star-svg"
@@ -37,6 +34,9 @@
                 return 'is-full';
             }
         },
+        getAriaLabel(rate, rateCount) {
+            return `Rating ${rate} / ${rateCount}`;
+        }
     }
 </script>
 
