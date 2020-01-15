@@ -176,6 +176,8 @@
                         this.dateTo = date;
                     }
                 }
+                this.$emit('dateFromChanged', this.dateFrom);
+                this.$emit('dateToChanged', this.dateTo);
             },
             nextMonth() {
                 const dateNew = new Date(this.dateShow);
@@ -246,22 +248,20 @@
                 if (this.dateFrom === null && this.dateTo !== null) {
                     this.dateFrom = new Date(this.dateTo);
                     this.dateTo = null;
+                    this.$emit('dateFromChanged', this.dateFrom);
+                    this.$emit('dateToChanged', this.dateTo);
                 } else {
                     if (this.dateTo !== null && this.dateFrom > this.dateTo) {
                         const dateTmp = new Date(this.dateTo);
                         this.dateTo = new Date(this.dateFrom);
                         this.dateFrom = dateTmp;
+                        this.$emit('dateFromChanged', this.dateFrom);
+                        this.$emit('dateToChanged', this.dateTo);
                     }
                 }
             }
         },
         watch: {
-            dateFrom(date) {
-                this.$emit('dateFromChanged', date);
-            },
-            dateTo(date) {
-                this.$emit('dateToChanged', date);
-            },
             dateStart: {
                 handler: function () {
                     this.initDates();
